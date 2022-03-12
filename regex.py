@@ -43,20 +43,37 @@ def phonebook(file_name, pattern_ph, pattern_add_ph, sub_ph, sub_add_ph):
     записей в телефонной книге
     '''
     raw_contact_list = file_opener(file_name)
-    phonebook_list = []
-    check_list = []
+    name_check_dict = {}
+    correct_list = []
     for person in raw_contact_list:
-        correct_list = []
-        phone = right_phone(person, pattern_ph, pattern_add_ph, sub_ph, sub_add_ph)
-        name = (person[0] + ' ' + person[1] + ' ' + person[2]).rstrip()
-        check_name_list = name.split()
+        correct_dict = {}
+        correct_dict['name'] = (person[0] + ' ' + person[1] + ' ' + person[2]).rstrip()
+        check_name_list = correct_dict['name'].split()
         check_name = check_name_list[0] + ' ' + check_name_list[1]
-        if check_name not in check_list:
-            check_list.append(check_name)
-            correct_list.append(name)
-            correct_list.append(phone)
-            phonebook_list.append(correct_list)
-    return phonebook_list
+        correct_dict['organization'] = person[3]
+        correct_dict['position'] = person[4]
+        correct_dict['email'] = person[6]
+        correct_dict['phone'] = right_phone(person, pattern_ph, pattern_add_ph, sub_ph, sub_add_ph)
+        if check_name not in name_check_dict.keys():  # определяет была ли запись на данного человека
+            name_check_dict[check_name] = correct_dict  # если да, то заполняются пустые поля
+        else:
+            if person[3]:
+                name_check_dict[check_name]['organization'] = person[3]
+            if person[4]:
+                name_check_dict[check_name]['position'] = person[4]
+            if person[6]:
+                name_check_dict[check_name]['email'] = person[6]
+    for value in name_check_dict.values():
+        one_person_list = [
+            value['name'],
+            value['organization'],
+            value['position'],
+            value['email'],
+            value['phone']
+        ]
+        correct_list.append(one_person_list)
+    return correct_list
+
 
 # TODO 1: выполните пункты 1-3 ДЗ
 # ваш код
